@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bondhu - Secure Chat</title>
+    <style>
+        body { font-family: sans-serif; background-color: #f4f4f4; padding: 10px; font-size: 14px; }
+        .box { background: white; border: 1px solid #999; padding: 10px; margin-bottom: 8px; }
+        input { width: 85%; padding: 6px; margin: 4px 0; border: 1px solid #bbb; }
+        button { background: #0088cc; color: white; border: none; padding: 7px 12px; cursor: pointer; border-radius: 3px; }
+        #chat_box { display: none; }
+        #messages { height: 200px; overflow-y: scroll; border: 1px solid #ddd; padding: 5px; background: #fff; margin-bottom: 5px; }
+        .msg { border-bottom: 1px solid #eee; padding: 4px 0; }
+        .info-text { font-size: 11px; color: #666; }
+    </style>
+</head>
+<body>
+
+<div id="login_area">
+    <div class="box">
+        <b>আপনার গোপন আইডি (আপনার নাম + পিন):</b><br>
+        <input type="text" id="my_full_id" placeholder="যেমন: Abir-5566">
+        <p class="info-text">*এটি আপনার পাসওয়ার্ডের মতো কাজ করবে। কাউকে বলবেন না।</p>
+    </div>
+
+    <div class="box">
+        <b>বন্ধুর গোপন আইডি লিখুন:</b><br>
+        <input type="text" id="friend_full_id" placeholder="যেমন: Babu-9900">
+        <button onclick="startSecureChat()">সুরক্ষিত চ্যাট শুরু করুন</button>
+    </div>
+</div>
+
+<div id="chat_box" class="box">
+    <b id="chat_title">প্রাইভেট চ্যাট</b> 
+    <button onclick="location.reload()" style="background:red; float:right; padding:3px 7px;">Exit</button>
+    <div id="messages">মেসেজ লোড হচ্ছে...</div>
+    <input type="text" id="msg_text" placeholder="মেসেজ লিখুন...">
+    <button onclick="sendSecureMsg()">পাঠান</button>
+</div>
+
+<script>
+    var secureID = "";
+    var myNameOnly = "";
+    var dbUrl = "https://bondhu-489ea-default-rtdb.firebaseio.com/secure_chats/";
+
+    function startSecureChat() {
+        var myID = document.getElementById('my_full_id').value.trim();
+        var friendID = document.getElementById('friend_full_id').value.trim();
+
+        if(myID == "" || friendID == "") {
+            alert("দয়া করে আপনার এবং আপনার বন্ধুর গোপন আইডি দিন");
+            return;
+        }
+
+        // চ্যাট আইডি তৈরি (দুই আইডির সংমিশ্রণ যাতে তৃতীয় কেউ ঢুকতে না পারে)
+        var pair = [myID, friendID].sort();
+        secureID = btoa(pair[0] + pair[1]).replace(/=/g, ""); // আইডিটিকে আরও গোপন (Encode) করা হলো
+        myNameOnly = myID.split('-')[0]; // মেসেজে দেখানোর জন্য শুধু নাম নেওয়া
+
+        document.getElementById('login_area').style.display = 'none';
+        document.getElementById('chat_box').style.display = 'block';
+        document.getElementById('chat_title').innerText = "বন্ধুর সাথে গোপন চ্যাট";
+        
+        loadSecureMsgs();
+        setInterval(loadSecureMsgs, 5000); // ৫ সেকেন্ড পর অটো রিফ্রেশ
+    }
+
+    function sendSecureMsg() {
+        var text = document.getElementById('msg_text').value;
+        if(text == "") return;
+
+        var data = JSON.stringify({ "u": myNameOnly, "m": text });
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", dbUrl + secureID + ".json", true);
+        xhr.send(data);
+        document.getElementById('msg_text').value = "";
+        setTimeout(loadSecureMsgs, 500);
+    }
+
+    function loadSecureMsgs() {
+        if(secureID == "") return;
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", dbUrl + secureID + ".json", true);
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                var response = JSON.parse(xhr.responseText);
+                var html = "";
+                for (var key in response) {
+                    html += "<div class='msg'><b>" + response[key].u + ":</b> " + response[key].m + "</div>";
+                }
+                document.getElementById('messages').innerHTML = html;
+                var d = document.getElementById("messages");
+                d.scrollTop = d.scrollHeight;
+            }
+        };
+        xhr.send();
+    }
+</script>
+
+</body>
+</html>
