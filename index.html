@@ -1,142 +1,144 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bondhu Messenger</title>
+    <title>Bondhu Messenger - Global</title>
     <style>
-        /* বাটন ফোনের জন্য বিশেষ স্টাইল */
-        body { font-family: Arial, sans-serif; background-color: #e5ddd5; margin: 0; padding: 0; }
+        /* Essential styles for older mobile browsers */
+        body { background-color: #e5ddd5; margin: 0; padding: 0; font-family: Arial, sans-serif; color: #333; }
         
-        /* সিম্পল হেডার */
-        .h-bar { background-color: #075e54; color: #ffffff; padding: 10px; font-weight: bold; font-size: 16px; border-bottom: 1px solid #054c44; }
-        .h-sub { font-size: 11px; font-weight: normal; margin-left: 5px; color: #dcf8c6; }
+        /* Top Header */
+        .header { background-color: #075e54; color: #ffffff; padding: 12px; font-weight: bold; font-size: 16px; border-bottom: 1px solid #054c44; }
+        .status { font-size: 10px; font-weight: normal; margin-left: 5px; color: #dcf8c6; }
 
-        /* লগইন এরিয়া */
-        .login-pad { padding: 20px 10px; text-align: center; }
-        .input-box { width: 90%; padding: 8px; margin: 5px 0; border: 1px solid #ccc; font-size: 14px; }
-        .btn-go { background-color: #25d366; color: white; border: none; padding: 10px; width: 95%; font-weight: bold; cursor: pointer; }
+        /* Login Container */
+        .login-box { background: #ffffff; margin: 15px; padding: 15px; border: 1px solid #ccc; text-align: center; border-radius: 4px; }
+        .input-field { width: 90%; padding: 10px; margin: 8px 0; border: 1px solid #999; font-size: 14px; }
+        .start-btn { background-color: #25d366; color: white; border: none; padding: 12px; width: 95%; font-weight: bold; font-size: 15px; cursor: pointer; }
 
-        /* চ্যাট এরিয়া */
-        #chat_box { display: none; }
-        .tools { background: #fff; padding: 5px; border-bottom: 1px solid #ddd; font-size: 12px; }
+        /* Chat Interface */
+        #chat_box { display: none; padding-bottom: 70px; } /* Space for the bottom bar */
+        .menu-bar { background: #ffffff; padding: 8px; border-bottom: 1px solid #ddd; font-size: 12px; clear: both; overflow: hidden; }
         
-        /* মেসেজ লিস্ট - জাভা ফোনের জন্য স্ক্রল ঠিক করা */
-        #messages { padding: 5px; min-height: 250px; background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); background-repeat: repeat; }
+        /* Message Area - Natural scrolling for Java Phones */
+        #messages { padding: 10px; min-height: 300px; background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); background-repeat: repeat; }
         
-        .m-row { width: 100%; margin: 5px 0; clear: both; }
-        .bubble { padding: 6px 10px; border-radius: 5px; font-size: 14px; border: 1px solid #bbb; display: inline-block; max-width: 85%; word-wrap: break-word; }
+        .msg-container { width: 100%; margin-bottom: 10px; clear: both; overflow: hidden; display: block; }
+        .bubble { padding: 8px 12px; border-radius: 6px; border: 1px solid #bbb; display: inline-block; max-width: 80%; word-wrap: break-word; font-size: 14px; line-height: 1.4; }
         
-        /* ডানে-বামে মেসেজ সাজানো */
-        .right { text-align: right; }
-        .left { text-align: left; }
-        .sent { background-color: #dcf8c6; }
-        .recd { background-color: #ffffff; }
+        /* Message Alignment */
+        .sent-row { text-align: right; }
+        .received-row { text-align: left; }
+        .sent-bubble { background-color: #dcf8c6; }
+        .received-bubble { background-color: #ffffff; }
 
-        .u-id { font-size: 10px; color: #075e54; font-weight: bold; display: block; }
+        .user-label { font-size: 10px; color: #075e54; font-weight: bold; display: block; margin-bottom: 3px; text-transform: capitalize; }
 
-        /* ইনপুট ফুটার */
-        .foot-bar { background: #f0f0f0; padding: 10px; border-top: 1px solid #ccc; }
-        .foot-bar input { width: 70%; padding: 8px; border: 1px solid #ccc; font-size: 14px; }
-        .foot-bar button { width: 25%; padding: 8px; background: #075e54; color: white; border: none; font-weight: bold; }
+        /* Input Footer */
+        .footer { background: #f0f0f0; padding: 10px; border-top: 1px solid #ccc; text-align: center; }
+        .msg-input { width: 70%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
+        .send-btn { width: 22%; padding: 10px; background: #075e54; color: white; border: none; font-weight: bold; border-radius: 4px; cursor: pointer; }
         
-        .x-btn { background: #ff4d4d; color: white; border: none; padding: 3px 6px; font-size: 10px; float: right; }
+        .exit-btn { background: #ff4d4d; color: white; border: none; padding: 4px 8px; font-size: 10px; float: right; border-radius: 3px; cursor: pointer; }
     </style>
 </head>
 <body>
 
-<div class="h-bar">
-    Bondhu <span class="h-sub">• Online</span>
+<div class="header">
+    Bondhu <span class="status">• Online</span>
 </div>
 
-<div id="l_a" class="login-pad">
-    <div style="background:white; border:1px solid #ccc; padding:15px; border-radius:5px;">
-        <b>Enter Credentials:</b><br>
-        <input type="text" id="i1" class="input-box" placeholder="Your Name-Pin"><br>
-        <input type="text" id="i2" class="input-box" placeholder="Friend Name-Pin"><br>
-        <button class="btn-go" onclick="_0x5a1()">LOGIN</button>
-    </div>
+<div id="login_area" class="login-box">
+    <b style="font-size: 18px; color: #075e54;">Bondhu Messenger</b><br><br>
+    <input type="text" id="my_id" class="input-field" placeholder="Your Name-Pin"><br>
+    <input type="text" id="friend_id" class="input-field" placeholder="Friend Name-Pin"><br>
+    <button class="start-btn" onclick="startApp()">START CHATTING</button>
 </div>
 
 <div id="chat_box">
-    <div class="tools">
-        History: <select id="s_m" onchange="_0x2b3()"></select>
-        <button class="x-btn" onclick="location.reload()">Exit</button>
+    <div class="menu-bar">
+        History: <select id="month_select" onchange="fetchData()" style="font-size: 12px;"></select>
+        <button class="exit-btn" onclick="location.reload()">Exit</button>
     </div>
 
     <div id="messages"></div>
     
-    <div class="foot-bar">
-        <input type="text" id="m_t" placeholder="Message...">
-        <button onclick="_0x9x1()">SEND</button>
+    <div class="footer">
+        <input type="text" id="msg_input" class="msg-input" placeholder="Type a message...">
+        <button class="send-btn" onclick="sendMessage()">SEND</button>
     </div>
 </div>
 
 <script>
-    var _0x44a = "aHR0cHM6Ly9ib25kaHUtNDg5ZWEtZGVmYXVsdC1ydGRiLmZpcmViYXNlaW8uY29tL3NlY3VyZV9jaGF0cy8=";
-    var _0x1a2 = ""; var _0x3d4 = "";
+    /* Obfuscated Database Logic for Security */
+    var _0xdb = "aHR0cHM6Ly9ib25kaHUtNDg5ZWEtZGVmYXVsdC1ydGRiLmZpcmViYXNlaW8uY29tL3NlY3VyZV9jaGF0cy8=";
+    var _0xid = ""; var _0xun = "";
 
-    function _0x5a1() {
-        var a = document.getElementById('i1').value.trim();
-        var b = document.getElementById('i2').value.trim();
-        if(a==""||b=="") return;
-        var p = [a,b].sort();
-        _0x1a2 = btoa(p[0]+p[1]).replace(/=/g, "");
-        _0x3d4 = a.split('-')[0];
-        document.getElementById('l_a').style.display='none';
-        document.getElementById('chat_box').style.display='block';
-        _0x8c2(); _0x2b3();
-        setInterval(_0x2b3, 8000);
+    function startApp() {
+        var a = document.getElementById('my_id').value.trim();
+        var b = document.getElementById('friend_id').value.trim();
+        if(a == "" || b == "") { alert("Please enter both IDs"); return; }
+        
+        var p = [a, b].sort();
+        _0xid = btoa(p[0] + p[1]).replace(/=/g, "");
+        _0xun = a.split('-')[0];
+        
+        document.getElementById('login_area').style.display = 'none';
+        document.getElementById('chat_box').style.display = 'block';
+        
+        setupMenu(); 
+        fetchData();
+        setInterval(fetchData, 10000); // 10-second refresh for compatibility
     }
 
-    function _0x8c2() {
-        var m = document.getElementById('s_m');
-        var d = new Date(); var s = new Date(2025,0,1);
-        while(s<=d){
-            var mN = s.toLocaleString('en-US', { month: 'short' });
-            var v = s.getFullYear()+"_"+(s.getMonth()+1);
-            var o = document.createElement('option');
-            o.value=v; o.innerHTML=mN + " " + s.getFullYear();
-            m.insertBefore(o, m.firstChild);
-            s.setMonth(s.getMonth()+1);
+    function setupMenu() {
+        var m = document.getElementById('month_select');
+        var d = new Date(); var s = new Date(2025, 0, 1);
+        while(s <= d) {
+            var mName = s.toLocaleString('en-US', { month: 'short' });
+            var val = s.getFullYear() + "_" + (s.getMonth() + 1);
+            var opt = document.createElement('option');
+            opt.value = val; opt.innerHTML = mName + " " + s.getFullYear();
+            m.insertBefore(opt, m.firstChild);
+            s.setMonth(s.getMonth() + 1);
         }
     }
 
-    function _0x9x1() {
-        var t = document.getElementById('m_t').value;
-        var sm = document.getElementById('s_m').value;
-        if(t=="") return;
-        var d = JSON.stringify({"u":_0x3d4,"m":t});
+    function sendMessage() {
+        var t = document.getElementById('msg_input').value;
+        var sm = document.getElementById('month_select').value;
+        if(t == "") return;
+        
+        var data = JSON.stringify({"u": _0xun, "m": t});
         var x = new XMLHttpRequest();
-        x.open("POST", atob(_0x44a)+_0x1a2+"/"+sm+".json", true);
-        x.send(d);
-        document.getElementById('m_t').value="";
-        setTimeout(_0x2b3, 1000);
+        x.open("POST", atob(_0xdb) + _0xid + "/" + sm + ".json", true);
+        x.send(data);
+        
+        document.getElementById('msg_input').value = "";
+        setTimeout(fetchData, 1500);
     }
 
-    function _0x2b3() {
-        if(_0x1a2=="") return;
-        var sm = document.getElementById('s_m').value;
+    function fetchData() {
+        if(_0xid == "") return;
+        var sm = document.getElementById('month_select').value;
         var x = new XMLHttpRequest();
-        x.open("GET", atob(_0x44a)+_0x1a2+"/"+sm+".json", true);
+        x.open("GET", atob(_0xdb) + _0xid + "/" + sm + ".json", true);
         x.onreadystatechange = function() {
-            if(x.readyState==4 && x.status==200){
-                var r = JSON.parse(x.responseText);
-                var h = "";
-                for(var k in r){ 
-                    var rCls = (r[k].u == _0x3d4) ? "right" : "left";
-                    var bCls = (r[k].u == _0x3d4) ? "sent" : "recd";
-                    h+="<div class='m-row "+rCls+"'><div class='bubble "+bCls+"'><span class='u-id'>"+r[k].u+"</span>"+r[k].m+"</div></div>"; 
+            if(x.readyState == 4 && x.status == 200) {
+                var res = JSON.parse(x.responseText);
+                var html = "";
+                for(var key in res) { 
+                    var isMe = (res[key].u == _0xun);
+                    var rowClass = isMe ? "sent-row" : "received-row";
+                    var bubClass = isMe ? "sent-bubble" : "received-bubble";
+                    html += "<div class='msg-container " + rowClass + "'><div class='bubble " + bubClass + "'><span class='user-label'>" + res[key].u + "</span>" + res[key].m + "</div></div>"; 
                 }
-                document.getElementById('messages').innerHTML = h || "<center style='color:gray;font-size:12px;'>No history</center>";
-                // জাভা ফোনের জন্য স্ক্রল সাপোর্ট
-                window.scrollTo(0, document.body.scrollHeight);
+                document.getElementById('messages').innerHTML = html || "<center style='color:gray; padding:20px;'>No messages found.</center>";
             }
         };
         x.send();
     }
 </script>
-
 </body>
 </html>
