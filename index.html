@@ -2,57 +2,48 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Bondhu Messenger</title>
+    <title>Bondhu - Top View</title>
     <style>
-        /* Optimized for easy access on Button Phones */
         body { background-color: #e5ddd5; margin: 0; padding: 0; font-family: Arial, sans-serif; }
-        .header { background-color: #075e54; color: #ffffff; padding: 10px; font-weight: bold; }
+        .header { background: #075e54; color: #fff; padding: 10px; font-weight: bold; }
         
-        /* Login Box */
-        .login-box { background: #fff; margin: 10px; padding: 15px; border: 1px solid #ccc; text-align: center; }
+        /* Login */
+        .l-box { background: #fff; margin: 10px; padding: 10px; border: 1px solid #ccc; text-align: center; }
         .in { width: 90%; padding: 8px; margin: 5px 0; border: 1px solid #999; }
-        .btn-start { background: #25d366; color: #fff; padding: 10px; width: 95%; font-weight: bold; border: none; }
+        .btn { background: #25d366; color: #fff; padding: 10px; width: 95%; font-weight: bold; border: none; }
 
-        /* Chat Layout */
-        #chat_box { display: none; }
-        
-        /* TOP INPUT AREA (No more scrolling to bottom to type!) */
-        .top-input { background: #f0f0f0; padding: 10px; border-bottom: 1px solid #ccc; text-align: center; }
-        .msg-in { width: 65%; padding: 8px; border: 1px solid #ccc; font-size: 14px; }
-        .send-btn { width: 25%; padding: 8px; background: #075e54; color: #fff; border: none; font-weight: bold; }
+        /* Input Area at Top */
+        .top-area { background: #f0f0f0; padding: 10px; border-bottom: 2px solid #ccc; position: sticky; top: 0; z-index: 10; }
+        .msg-in { width: 65%; padding: 8px; border: 1px solid #ccc; }
+        .send { width: 25%; padding: 8px; background: #075e54; color: #fff; border: none; font-weight: bold; }
 
-        /* Settings Bar */
-        .settings { background: #fff; padding: 5px; font-size: 11px; border-bottom: 1px solid #ddd; }
-
-        /* Message List */
-        #messages { padding: 10px; background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); }
-        .msg-row { width: 100%; margin-bottom: 8px; clear: both; overflow: hidden; display: block; }
-        .bubble { padding: 8px; border-radius: 5px; border: 1px solid #bbb; display: inline-block; max-width: 80%; word-wrap: break-word; font-size: 14px; }
+        /* Message Styles */
+        #messages { padding: 10px; }
+        .row { width: 100%; margin-bottom: 8px; clear: both; overflow: hidden; display: block; }
+        .bubble { padding: 8px; border-radius: 5px; border: 1px solid #bbb; display: inline-block; max-width: 85%; word-wrap: break-word; font-size: 14px; }
         .s { background: #dcf8c6; float: right; } /* Sent */
         .r { background: #ffffff; float: left; }  /* Received */
-        .u-name { font-size: 10px; color: #075e54; font-weight: bold; display: block; margin-bottom: 2px; }
+        .u { font-size: 10px; color: #075e54; font-weight: bold; display: block; }
     </style>
 </head>
 <body>
 
 <div class="header">Bondhu Messenger</div>
 
-<div id="l_area" class="login-box">
-    <b>Login</b><br>
-    <input type="text" id="id1" class="in" placeholder="My ID-Pin"><br>
+<div id="l_area" class="l-box">
+    <input type="text" id="id1" class="in" placeholder="Your ID-Pin"><br>
     <input type="text" id="id2" class="in" placeholder="Friend ID-Pin"><br>
-    <button class="btn-start" onclick="start()">LOGIN</button>
+    <button class="btn" onclick="start()">LOGIN</button>
 </div>
 
-<div id="chat_box">
-    <div class="top-input">
-        <input type="text" id="m_text" class="msg-in" placeholder="Write message...">
-        <button class="send-btn" onclick="send()">SEND</button>
-    </div>
-
-    <div class="settings">
-        History: <select id="m_sel" onchange="load()"></select>
-        <button onclick="location.reload()" style="float:right; background:red; color:#white; border:none; padding:2px 5px;">Exit</button>
+<div id="chat_box" style="display:none;">
+    <div class="top-area">
+        <input type="text" id="m_text" class="msg-in" placeholder="Type here...">
+        <button class="send" onclick="send()">SEND</button>
+        <div style="font-size:10px; margin-top:5px;">
+            History: <select id="m_sel" onchange="load()"></select>
+            <button onclick="location.reload()" style="float:right; background:red; color:#fff; border:none; padding:2px 4px;">Exit</button>
+        </div>
     </div>
 
     <div id="messages"></div>
@@ -108,11 +99,14 @@
             if(x.readyState==4 && x.status==200){
                 var res = JSON.parse(x.responseText);
                 var h = "";
-                // To show NEWEST messages at the top, we can reverse the loop
-                // But usually, chat flows down. Let's keep the flow natural.
-                for(var k in res){ 
+                var keys = [];
+                for(var k in res) keys.push(k);
+                keys.reverse(); // THIS REVERSES THE ORDER (Newest First)
+
+                for(var i=0; i<keys.length; i++){
+                    var k = keys[i];
                     var c = (res[k].u == _uname) ? "s" : "r";
-                    h+="<div class='msg-row'><div class='bubble "+c+"'><span class='u-name'>"+res[k].u+"</span>"+res[k].m+"</div></div>"; 
+                    h+="<div class='row'><div class='bubble "+c+"'><span class='u'>"+res[k].u+"</span>"+res[k].m+"</div></div>"; 
                 }
                 document.getElementById('messages').innerHTML = h || "<center>No messages</center>";
             }
