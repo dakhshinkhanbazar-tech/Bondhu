@@ -1,152 +1,141 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bondhu - Lifetime Secure Chat</title>
+    <title>Bondhu Messenger - International</title>
     <style>
-        body { font-family: sans-serif; background-color: #f4f4f4; padding: 10px; font-size: 14px; color: #333; }
-        .box { background: white; border: 1px solid #999; padding: 10px; margin-bottom: 8px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        input, select { width: 90%; padding: 8px; margin: 5px 0; border: 1px solid #bbb; border-radius: 3px; }
-        button { background: #0088cc; color: white; border: none; padding: 10px 15px; cursor: pointer; border-radius: 3px; font-weight: bold; width: 100%; margin-top: 5px; }
-        #chat_box { display: none; }
-        #messages { height: 280px; overflow-y: scroll; border: 1px solid #ddd; padding: 8px; background: #fff; margin-bottom: 8px; border-radius: 3px; }
-        .msg { border-bottom: 1px solid #eee; padding: 6px 0; word-wrap: break-word; }
-        .u-name { color: #0088cc; font-weight: bold; }
-        .archive-area { background: #e7eff6; padding: 8px; margin-bottom: 10px; border: 1px solid #b2c2d1; border-radius: 3px; font-size: 12px; }
-        .exit-btn { background: #d9534f; width: auto; float: right; padding: 4px 8px; margin: 0; font-size: 11px; }
+        /* Global Styles */
+        body { font-family: 'Segoe UI', Helvetica, Arial, sans-serif; background-color: #ece5dd; margin: 0; padding: 0; display: flex; flex-direction: column; height: 100vh; }
+        
+        /* Green WhatsApp Header */
+        .header { background-color: #075e54; color: white; padding: 15px; text-align: left; font-size: 18px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        
+        /* Login Layout */
+        .login-container { padding: 20px; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 80vh; }
+        .box { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); width: 90%; max-width: 350px; }
+        .box b { color: #075e54; display: block; margin-bottom: 5px; font-size: 13px; }
+
+        input, select { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; font-size: 14px; }
+        
+        button { background-color: #25d366; color: white; border: none; padding: 12px; cursor: pointer; border-radius: 5px; font-weight: bold; width: 100%; font-size: 16px; transition: 0.3s; }
+        button:active { background-color: #128c7e; }
+
+        /* Chat Interface */
+        #chat_box { display: none; flex-direction: column; height: 100vh; }
+        .archive-area { background: #fff; padding: 8px 12px; border-bottom: 1px solid #ddd; font-size: 12px; display: flex; align-items: center; justify-content: space-between; color: #555; }
+        .archive-area select { width: 55%; margin: 0; padding: 4px; font-size: 12px; }
+
+        #messages { flex: 1; overflow-y: scroll; padding: 15px; display: flex; flex-direction: column; background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); background-repeat: repeat; }
+        
+        /* Chat Bubbles */
+        .msg { max-width: 80%; padding: 8px 12px; margin-bottom: 8px; border-radius: 8px; position: relative; font-size: 14px; line-height: 1.5; box-shadow: 0 1px 2px rgba(0,0,0,0.1); word-wrap: break-word; }
+        .msg.sent { background-color: #dcf8c6; align-self: flex-end; border-top-right-radius: 0; text-align: right; }
+        .msg.received { background-color: #ffffff; align-self: flex-start; border-top-left-radius: 0; text-align: left; }
+        
+        .u-n { font-size: 10px; font-weight: bold; color: #075e54; display: block; margin-bottom: 2px; text-transform: capitalize; }
+
+        /* Bottom Input Bar */
+        .footer { background: #f0f0f0; padding: 10px; display: flex; gap: 10px; align-items: center; border-top: 1px solid #ddd; }
+        .footer input { margin: 0; flex: 1; border-radius: 20px; padding: 10px 15px; border: 1px solid #ccc; outline: none; }
+        .footer button { width: auto; border-radius: 50%; padding: 10px 18px; margin: 0; font-size: 18px; }
+        
+        .exit-btn { background: #ff4d4d; color: white; border: none; padding: 5px 10px; border-radius: 4px; font-size: 11px; cursor: pointer; width: auto; }
     </style>
 </head>
-<body>
+<body oncontextmenu="return false;">
 
-<div id="login_area">
+<div class="header" id="main_header">Bondhu Messenger</div>
+
+<div id="l_a" class="login-container">
     <div class="box">
-        <h3 style="margin-top:0;">Bondhu Login</h3>
-        <b>আপনার আইডি (নাম-পিন):</b><br>
-        <input type="text" id="my_full_id" placeholder="যেমন: Abir-1234">
-        <br><br>
-        <b>বন্ধুর আইডি (নাম-পিন):</b><br>
-        <input type="text" id="friend_full_id" placeholder="যেমন: Babu-5678">
-        <button onclick="startChat()">সুরক্ষিত চ্যাট শুরু করুন</button>
+        <b>Your ID (Name-Pin):</b>
+        <input type="text" id="i1" placeholder="e.g. John-1234">
+        <b>Friend's ID:</b>
+        <input type="text" id="i2" placeholder="e.g. Mike-5678">
+        <button onclick="_0x5a1()">Start Chat</button>
     </div>
 </div>
 
-<div id="chat_box" class="box">
-    <button class="exit-btn" onclick="location.reload()">Exit</button>
-    <b id="chat_title" style="color:#0088cc;">প্রাইভেট চ্যাট</b> 
-    <div style="clear:both;"></div>
-
+<div id="chat_box">
     <div class="archive-area">
-        <b>পুরনো মেসেজ দেখুন:</b><br>
-        <select id="select_month" onchange="loadMsgs()">
-            </select>
+        <span>History:</span>
+        <select id="s_m" onchange="_0x2b3()"></select>
+        <button class="exit-btn" onclick="location.reload()">Exit</button>
     </div>
 
-    <div id="messages">মেসেজ লোড হচ্ছে...</div>
+    <div id="messages"></div>
     
-    <input type="text" id="msg_text" placeholder="মেসেজ লিখুন...">
-    <button onclick="sendMsg()">পাঠান</button>
+    <div class="footer">
+        <input type="text" id="m_t" placeholder="Type a message...">
+        <button onclick="_0x9x1()">➤</button>
+    </div>
 </div>
 
 <script>
-    var secureID = "";
-    var myNameOnly = "";
-    // আপনার ফায়ারবেস ডাটাবেস ইউআরএল
-    var dbUrl = "https://bondhu-489ea-default-rtdb.firebaseio.com/secure_chats/";
+    /* Scrambled Logic for Security */
+    var _0x44a = "aHR0cHM6Ly9ib25kaHUtNDg5ZWEtZGVmYXVsdC1ydGRiLmZpcmViYXNlaW8uY29tL3NlY3VyZV9jaGF0cy8=";
+    var _0x1a2 = ""; var _0x3d4 = "";
 
-    // চ্যাট শুরুর সময় থেকে বর্তমান পর্যন্ত সব মাস মেনুতে যোগ করা
-    function setupMonthMenu() {
-        var menu = document.getElementById('select_month');
-        menu.innerHTML = ""; 
+    function _0x5a1() {
+        var a = document.getElementById('i1').value.trim();
+        var b = document.getElementById('i2').value.trim();
+        if(a==""||b=="") { alert("Please enter both IDs"); return; }
+        var p = [a,b].sort();
+        _0x1a2 = btoa(p[0]+p[1]).replace(/=/g, "");
+        _0x3d4 = a.split('-')[0];
+        document.getElementById('l_a').style.display='none';
+        document.getElementById('chat_box').style.display='flex';
+        document.getElementById('main_header').innerText = "Private Chat";
+        _0x8c2(); _0x2b3();
+        setInterval(_0x2b3, 8000); // 8 sec refresh for compatibility
+    }
 
-        var startDate = new Date(2025, 0, 1); // চ্যাট শুরুর তারিখ: জানুয়ারি ২০২৫
-        var currentDate = new Date();
-
-        while (startDate <= currentDate) {
-            var mName = startDate.toLocaleString('default', { month: 'long' });
-            var val = startDate.getFullYear() + "_" + (startDate.getMonth() + 1);
-            
-            var opt = document.createElement('option');
-            opt.value = val;
-            opt.innerHTML = mName + " " + startDate.getFullYear();
-            
-            // নতুন মাস সবার উপরে থাকবে
-            menu.insertBefore(opt, menu.firstChild);
-
-            startDate.setMonth(startDate.getMonth() + 1);
+    function _0x8c2() {
+        var m = document.getElementById('s_m');
+        var d = new Date(); var s = new Date(2025,0,1);
+        while(s<=d){
+            var mName = s.toLocaleString('en-US', { month: 'long' });
+            var v = s.getFullYear()+"_"+(s.getMonth()+1);
+            var o = document.createElement('option');
+            o.value=v; o.innerHTML=mName + " " + s.getFullYear();
+            m.insertBefore(o, m.firstChild);
+            s.setMonth(s.getMonth()+1);
         }
     }
 
-    function startChat() {
-        var myID = document.getElementById('my_full_id').value.trim();
-        var friendID = document.getElementById('friend_full_id').value.trim();
-
-        if(myID == "" || friendID == "") {
-            alert("আপনার এবং বন্ধুর আইডি সঠিকভাবে দিন");
-            return;
-        }
-
-        // ইউনিক আইডি এনকোডিং (সুরক্ষার জন্য)
-        var pair = [myID, friendID].sort();
-        secureID = btoa(pair[0] + pair[1]).replace(/=/g, ""); 
-        myNameOnly = myID.split('-')[0];
-
-        document.getElementById('login_area').style.display = 'none';
-        document.getElementById('chat_box').style.display = 'block';
-        document.getElementById('chat_title').innerText = "বন্ধুর সাথে চ্যাট";
-        
-        setupMonthMenu();
-        loadMsgs();
-        
-        // বাটন ফোনের জন্য ৮ সেকেন্ড পর পর অটো আপডেট
-        setInterval(loadMsgs, 8000); 
+    function _0x9x1() {
+        var t = document.getElementById('m_t').value;
+        var sm = document.getElementById('s_m').value;
+        if(t=="") return;
+        var d = JSON.stringify({"u":_0x3d4,"m":t});
+        var x = new XMLHttpRequest();
+        x.open("POST", atob(_0x44a)+_0x1a2+"/"+sm+".json", true);
+        x.send(d);
+        document.getElementById('m_t').value="";
+        setTimeout(_0x2b3, 1000);
     }
 
-    function sendMsg() {
-        var text = document.getElementById('msg_text').value;
-        var selectedMonth = document.getElementById('select_month').value;
-        
-        if(text == "") return;
-
-        var data = JSON.stringify({ "u": myNameOnly, "m": text });
-        var xhr = new XMLHttpRequest();
-        
-        // নির্বাচিত মাসের ফোল্ডারে মেসেজ যাবে
-        xhr.open("POST", dbUrl + secureID + "/" + selectedMonth + ".json", true);
-        xhr.send(data);
-        
-        document.getElementById('msg_text').value = "";
-        // দ্রুত আপডেট দেখানোর জন্য
-        setTimeout(loadMsgs, 1000);
-    }
-
-    function loadMsgs() {
-        if(secureID == "") return;
-        var selectedMonth = document.getElementById('select_month').value;
-        
-        var xhr = new XMLHttpRequest();
-        xhr.open("GET", dbUrl + secureID + "/" + selectedMonth + ".json", true);
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState == 4 && xhr.status == 200) {
-                var response = JSON.parse(xhr.responseText);
-                var html = "";
-                if (response) {
-                    for (var key in response) {
-                        html += "<div class='msg'><span class='u-name'>" + response[key].u + ":</span> " + response[key].m + "</div>";
-                    }
-                } else {
-                    html = "<div style='color:gray;text-align:center;padding-top:20px;'>এই মাসের কোনো চ্যাট হিস্ট্রি পাওয়া যায়নি।</div>";
+    function _0x2b3() {
+        if(_0x1a2=="") return;
+        var sm = document.getElementById('s_m').value;
+        var x = new XMLHttpRequest();
+        x.open("GET", atob(_0x44a)+_0x1a2+"/"+sm+".json", true);
+        x.onreadystatechange = function() {
+            if(x.readyState==4 && x.status==200){
+                var r = JSON.parse(x.responseText);
+                var h = "";
+                for(var k in r){ 
+                    var type = (r[k].u == _0x3d4) ? "sent" : "received";
+                    h+="<div class='msg "+type+"'><span class='u-n'>"+r[k].u+"</span>"+r[k].m+"</div>"; 
                 }
-                document.getElementById('messages').innerHTML = html;
-                
-                // স্ক্রল নিচে নামানো
-                var d = document.getElementById("messages");
-                d.scrollTop = d.scrollHeight;
+                document.getElementById('messages').innerHTML = h || "<center style='color:gray; margin-top:20px;'>No messages found for this month.</center>";
+                var msgDiv = document.getElementById("messages");
+                msgDiv.scrollTop = msgDiv.scrollHeight;
             }
         };
-        xhr.send();
+        x.send();
     }
 </script>
-
 </body>
 </html>
