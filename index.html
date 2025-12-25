@@ -3,102 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bondhu Messenger - International</title>
+    <title>Bondhu Messenger</title>
     <style>
-        /* Global Styles */
-        body { font-family: 'Segoe UI', Helvetica, Arial, sans-serif; background-color: #ece5dd; margin: 0; padding: 0; display: flex; flex-direction: column; height: 100vh; }
+        /* Full screen control for button phones */
+        html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; font-family: Arial, sans-serif; background-color: #e5ddd5; }
         
-        /* Green WhatsApp Header */
-        .header { background-color: #075e54; color: white; padding: 15px; text-align: left; font-size: 18px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-        
+        /* Fixed Header - Bondhu */
+        .header { 
+            position: fixed; top: 0; width: 100%; height: 45px; 
+            background-color: #075e54; color: white; line-height: 45px; 
+            padding-left: 15px; font-weight: bold; z-index: 1000; box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+
         /* Login Layout */
-        .login-container { padding: 20px; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 80vh; }
-        .box { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); width: 90%; max-width: 350px; }
-        .box b { color: #075e54; display: block; margin-bottom: 5px; font-size: 13px; }
+        .login-box { padding: 60px 20px; text-align: center; }
+        .login-box input { width: 85%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; }
+        .login-box button { width: 90%; padding: 12px; background: #25d366; color: white; border: none; font-weight: bold; border-radius: 4px; }
 
-        input, select { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; font-size: 14px; }
+        /* Scrollable Message Area */
+        #chat_box { display: none; height: 100%; }
         
-        button { background-color: #25d366; color: white; border: none; padding: 12px; cursor: pointer; border-radius: 5px; font-weight: bold; width: 100%; font-size: 16px; transition: 0.3s; }
-        button:active { background-color: #128c7e; }
+        #messages_container { 
+            position: absolute; top: 45px; bottom: 60px; 
+            width: 100%; overflow-y: auto; padding: 10px 0;
+            background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png');
+        }
 
-        /* Chat Interface */
-        #chat_box { display: none; flex-direction: column; height: 100vh; }
-        .archive-area { background: #fff; padding: 8px 12px; border-bottom: 1px solid #ddd; font-size: 12px; display: flex; align-items: center; justify-content: space-between; color: #555; }
-        .archive-area select { width: 55%; margin: 0; padding: 4px; font-size: 12px; }
-
-        #messages { flex: 1; overflow-y: scroll; padding: 15px; display: flex; flex-direction: column; background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); background-repeat: repeat; }
-        
-        /* Chat Bubbles */
-        .msg { max-width: 80%; padding: 8px 12px; margin-bottom: 8px; border-radius: 8px; position: relative; font-size: 14px; line-height: 1.5; box-shadow: 0 1px 2px rgba(0,0,0,0.1); word-wrap: break-word; }
-        .msg.sent { background-color: #dcf8c6; align-self: flex-end; border-top-right-radius: 0; text-align: right; }
-        .msg.received { background-color: #ffffff; align-self: flex-start; border-top-left-radius: 0; text-align: left; }
-        
+        .msg-row { width: 95%; margin: 5px auto; clear: both; }
+        .msg { padding: 8px 12px; border-radius: 8px; font-size: 14px; max-width: 80%; word-wrap: break-word; border: 1px solid #ccc; display: inline-block; box-shadow: 0 1px 1px rgba(0,0,0,0.1); }
+        .sent-row { text-align: right; }
+        .received-row { text-align: left; }
+        .sent { background-color: #dcf8c6; }
+        .received { background-color: #ffffff; }
         .u-n { font-size: 10px; font-weight: bold; color: #075e54; display: block; margin-bottom: 2px; text-transform: capitalize; }
 
-        /* Bottom Input Bar */
-        .footer { background: #f0f0f0; padding: 10px; display: flex; gap: 10px; align-items: center; border-top: 1px solid #ddd; }
-        .footer input { margin: 0; flex: 1; border-radius: 20px; padding: 10px 15px; border: 1px solid #ccc; outline: none; }
-        .footer button { width: auto; border-radius: 50%; padding: 10px 18px; margin: 0; font-size: 18px; }
+        /* Fixed Bottom Input Bar */
+        .footer { 
+            position: fixed; bottom: 0; width: 100%; height: 55px; 
+            background: #f0f0f0; border-top: 1px solid #ccc; display: flex; align-items: center; padding: 0 5px; box-sizing: border-box;
+        }
+        .footer input { flex: 1; height: 35px; border: 1px solid #ccc; border-radius: 20px; padding: 0 15px; margin-right: 5px; outline: none; }
+        .footer button { width: 65px; height: 35px; background: #075e54; color: white; border: none; border-radius: 5px; font-weight: bold; }
         
-        .exit-btn { background: #ff4d4d; color: white; border: none; padding: 5px 10px; border-radius: 4px; font-size: 11px; cursor: pointer; width: auto; }
+        .exit-btn { font-size: 10px; background: #ff4d4d; color: white; border: none; padding: 3px 8px; float: right; margin-right: 20px; margin-top: 10px; border-radius: 3px; }
     </style>
 </head>
 <body oncontextmenu="return false;">
 
-<div class="header" id="main_header">Bondhu Messenger</div>
+<div class="header">
+    Bondhu 
+    <span id="chat_status" style="font-size: 10px; font-weight: normal; margin-left: 5px;"></span>
+</div>
 
-<div id="l_a" class="login-container">
-    <div class="box">
-        <b>Your ID (Name-Pin):</b>
-        <input type="text" id="i1" placeholder="e.g. John-1234">
-        <b>Friend's ID:</b>
-        <input type="text" id="i2" placeholder="e.g. Mike-5678">
-        <button onclick="_0x5a1()">Start Chat</button>
-    </div>
+<div id="l_a" class="login-box">
+    <h3 style="color:#075e54;">Bondhu Messenger</h3>
+    <input type="text" id="i1" placeholder="Your Name-Pin"><br>
+    <input type="text" id="i2" placeholder="Friend Name-Pin"><br>
+    <button onclick="_0x5a1()">LOGIN</button>
 </div>
 
 <div id="chat_box">
-    <div class="archive-area">
-        <span>History:</span>
-        <select id="s_m" onchange="_0x2b3()"></select>
-        <button class="exit-btn" onclick="location.reload()">Exit</button>
+    <div id="messages_container">
+        <div style="text-align:center; padding: 5px;">
+            <select id="s_m" onchange="_0x2b3()" style="font-size:11px; padding:2px;"></select>
+            <button class="exit-btn" onclick="location.reload()">Exit</button>
+        </div>
+        <div id="messages"></div>
     </div>
-
-    <div id="messages"></div>
     
     <div class="footer">
-        <input type="text" id="m_t" placeholder="Type a message...">
-        <button onclick="_0x9x1()">➤</button>
+        <input type="text" id="m_t" placeholder="Type message...">
+        <button onclick="_0x9x1()">SEND</button>
     </div>
 </div>
 
 <script>
-    /* Scrambled Logic for Security */
     var _0x44a = "aHR0cHM6Ly9ib25kaHUtNDg5ZWEtZGVmYXVsdC1ydGRiLmZpcmViYXNlaW8uY29tL3NlY3VyZV9jaGF0cy8=";
     var _0x1a2 = ""; var _0x3d4 = "";
 
     function _0x5a1() {
         var a = document.getElementById('i1').value.trim();
         var b = document.getElementById('i2').value.trim();
-        if(a==""||b=="") { alert("Please enter both IDs"); return; }
+        if(a==""||b=="") { alert("Enter IDs"); return; }
         var p = [a,b].sort();
         _0x1a2 = btoa(p[0]+p[1]).replace(/=/g, "");
         _0x3d4 = a.split('-')[0];
         document.getElementById('l_a').style.display='none';
-        document.getElementById('chat_box').style.display='flex';
-        document.getElementById('main_header').innerText = "Private Chat";
+        document.getElementById('chat_box').style.display='block';
+        document.getElementById('chat_status').innerText = "• Online";
         _0x8c2(); _0x2b3();
-        setInterval(_0x2b3, 8000); // 8 sec refresh for compatibility
+        setInterval(_0x2b3, 8000);
     }
 
     function _0x8c2() {
         var m = document.getElementById('s_m');
         var d = new Date(); var s = new Date(2025,0,1);
         while(s<=d){
-            var mName = s.toLocaleString('en-US', { month: 'long' });
+            var mN = s.toLocaleString('en-US', { month: 'short' });
             var v = s.getFullYear()+"_"+(s.getMonth()+1);
             var o = document.createElement('option');
-            o.value=v; o.innerHTML=mName + " " + s.getFullYear();
+            o.value=v; o.innerHTML=mN + " " + s.getFullYear();
             m.insertBefore(o, m.firstChild);
             s.setMonth(s.getMonth()+1);
         }
@@ -126,12 +130,13 @@
                 var r = JSON.parse(x.responseText);
                 var h = "";
                 for(var k in r){ 
-                    var type = (r[k].u == _0x3d4) ? "sent" : "received";
-                    h+="<div class='msg "+type+"'><span class='u-n'>"+r[k].u+"</span>"+r[k].m+"</div>"; 
+                    var rowC = (r[k].u == _0x3d4) ? "sent-row" : "received-row";
+                    var msgC = (r[k].u == _0x3d4) ? "sent" : "received";
+                    h+="<div class='msg-row "+rowC+"'><div class='msg "+msgC+"'><span class='u-n'>"+r[k].u+"</span>"+r[k].m+"</div></div>"; 
                 }
-                document.getElementById('messages').innerHTML = h || "<center style='color:gray; margin-top:20px;'>No messages found for this month.</center>";
-                var msgDiv = document.getElementById("messages");
-                msgDiv.scrollTop = msgDiv.scrollHeight;
+                document.getElementById('messages').innerHTML = h || "<center style='color:gray;font-size:12px;margin-top:20px;'>No messages yet</center>";
+                var container = document.getElementById("messages_container");
+                container.scrollTop = container.scrollHeight;
             }
         };
         x.send();
