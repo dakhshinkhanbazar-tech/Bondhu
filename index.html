@@ -3,93 +3,143 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bondhu - Secure Chat</title>
+    <title>Bondhu - Lifetime Secure Chat</title>
     <style>
-        body { font-family: sans-serif; background-color: #f4f4f4; padding: 10px; font-size: 14px; }
-        .box { background: white; border: 1px solid #999; padding: 10px; margin-bottom: 8px; }
-        input { width: 85%; padding: 6px; margin: 4px 0; border: 1px solid #bbb; }
-        button { background: #0088cc; color: white; border: none; padding: 7px 12px; cursor: pointer; border-radius: 3px; }
+        body { font-family: sans-serif; background-color: #f4f4f4; padding: 10px; font-size: 14px; color: #333; }
+        .box { background: white; border: 1px solid #999; padding: 10px; margin-bottom: 8px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        input, select { width: 90%; padding: 8px; margin: 5px 0; border: 1px solid #bbb; border-radius: 3px; }
+        button { background: #0088cc; color: white; border: none; padding: 10px 15px; cursor: pointer; border-radius: 3px; font-weight: bold; width: 100%; margin-top: 5px; }
         #chat_box { display: none; }
-        #messages { height: 200px; overflow-y: scroll; border: 1px solid #ddd; padding: 5px; background: #fff; margin-bottom: 5px; }
-        .msg { border-bottom: 1px solid #eee; padding: 4px 0; }
-        .info-text { font-size: 11px; color: #666; }
+        #messages { height: 280px; overflow-y: scroll; border: 1px solid #ddd; padding: 8px; background: #fff; margin-bottom: 8px; border-radius: 3px; }
+        .msg { border-bottom: 1px solid #eee; padding: 6px 0; word-wrap: break-word; }
+        .u-name { color: #0088cc; font-weight: bold; }
+        .archive-area { background: #e7eff6; padding: 8px; margin-bottom: 10px; border: 1px solid #b2c2d1; border-radius: 3px; font-size: 12px; }
+        .exit-btn { background: #d9534f; width: auto; float: right; padding: 4px 8px; margin: 0; font-size: 11px; }
     </style>
 </head>
 <body>
 
 <div id="login_area">
     <div class="box">
-        <b>আপনার গোপন আইডি (আপনার নাম + পিন):</b><br>
-        <input type="text" id="my_full_id" placeholder="যেমন: Abir-5566">
-        <p class="info-text">*এটি আপনার পাসওয়ার্ডের মতো কাজ করবে। কাউকে বলবেন না।</p>
-    </div>
-
-    <div class="box">
-        <b>বন্ধুর গোপন আইডি লিখুন:</b><br>
-        <input type="text" id="friend_full_id" placeholder="যেমন: Babu-9900">
-        <button onclick="startSecureChat()">সুরক্ষিত চ্যাট শুরু করুন</button>
+        <h3 style="margin-top:0;">Bondhu Login</h3>
+        <b>আপনার আইডি (নাম-পিন):</b><br>
+        <input type="text" id="my_full_id" placeholder="যেমন: Abir-1234">
+        <br><br>
+        <b>বন্ধুর আইডি (নাম-পিন):</b><br>
+        <input type="text" id="friend_full_id" placeholder="যেমন: Babu-5678">
+        <button onclick="startChat()">সুরক্ষিত চ্যাট শুরু করুন</button>
     </div>
 </div>
 
 <div id="chat_box" class="box">
-    <b id="chat_title">প্রাইভেট চ্যাট</b> 
-    <button onclick="location.reload()" style="background:red; float:right; padding:3px 7px;">Exit</button>
+    <button class="exit-btn" onclick="location.reload()">Exit</button>
+    <b id="chat_title" style="color:#0088cc;">প্রাইভেট চ্যাট</b> 
+    <div style="clear:both;"></div>
+
+    <div class="archive-area">
+        <b>পুরনো মেসেজ দেখুন:</b><br>
+        <select id="select_month" onchange="loadMsgs()">
+            </select>
+    </div>
+
     <div id="messages">মেসেজ লোড হচ্ছে...</div>
+    
     <input type="text" id="msg_text" placeholder="মেসেজ লিখুন...">
-    <button onclick="sendSecureMsg()">পাঠান</button>
+    <button onclick="sendMsg()">পাঠান</button>
 </div>
 
 <script>
     var secureID = "";
     var myNameOnly = "";
+    // আপনার ফায়ারবেস ডাটাবেস ইউআরএল
     var dbUrl = "https://bondhu-489ea-default-rtdb.firebaseio.com/secure_chats/";
 
-    function startSecureChat() {
+    // চ্যাট শুরুর সময় থেকে বর্তমান পর্যন্ত সব মাস মেনুতে যোগ করা
+    function setupMonthMenu() {
+        var menu = document.getElementById('select_month');
+        menu.innerHTML = ""; 
+
+        var startDate = new Date(2025, 0, 1); // চ্যাট শুরুর তারিখ: জানুয়ারি ২০২৫
+        var currentDate = new Date();
+
+        while (startDate <= currentDate) {
+            var mName = startDate.toLocaleString('default', { month: 'long' });
+            var val = startDate.getFullYear() + "_" + (startDate.getMonth() + 1);
+            
+            var opt = document.createElement('option');
+            opt.value = val;
+            opt.innerHTML = mName + " " + startDate.getFullYear();
+            
+            // নতুন মাস সবার উপরে থাকবে
+            menu.insertBefore(opt, menu.firstChild);
+
+            startDate.setMonth(startDate.getMonth() + 1);
+        }
+    }
+
+    function startChat() {
         var myID = document.getElementById('my_full_id').value.trim();
         var friendID = document.getElementById('friend_full_id').value.trim();
 
         if(myID == "" || friendID == "") {
-            alert("দয়া করে আপনার এবং আপনার বন্ধুর গোপন আইডি দিন");
+            alert("আপনার এবং বন্ধুর আইডি সঠিকভাবে দিন");
             return;
         }
 
-        // চ্যাট আইডি তৈরি (দুই আইডির সংমিশ্রণ যাতে তৃতীয় কেউ ঢুকতে না পারে)
+        // ইউনিক আইডি এনকোডিং (সুরক্ষার জন্য)
         var pair = [myID, friendID].sort();
-        secureID = btoa(pair[0] + pair[1]).replace(/=/g, ""); // আইডিটিকে আরও গোপন (Encode) করা হলো
-        myNameOnly = myID.split('-')[0]; // মেসেজে দেখানোর জন্য শুধু নাম নেওয়া
+        secureID = btoa(pair[0] + pair[1]).replace(/=/g, ""); 
+        myNameOnly = myID.split('-')[0];
 
         document.getElementById('login_area').style.display = 'none';
         document.getElementById('chat_box').style.display = 'block';
-        document.getElementById('chat_title').innerText = "বন্ধুর সাথে গোপন চ্যাট";
+        document.getElementById('chat_title').innerText = "বন্ধুর সাথে চ্যাট";
         
-        loadSecureMsgs();
-        setInterval(loadSecureMsgs, 5000); // ৫ সেকেন্ড পর অটো রিফ্রেশ
+        setupMonthMenu();
+        loadMsgs();
+        
+        // বাটন ফোনের জন্য ৮ সেকেন্ড পর পর অটো আপডেট
+        setInterval(loadMsgs, 8000); 
     }
 
-    function sendSecureMsg() {
+    function sendMsg() {
         var text = document.getElementById('msg_text').value;
+        var selectedMonth = document.getElementById('select_month').value;
+        
         if(text == "") return;
 
         var data = JSON.stringify({ "u": myNameOnly, "m": text });
         var xhr = new XMLHttpRequest();
-        xhr.open("POST", dbUrl + secureID + ".json", true);
+        
+        // নির্বাচিত মাসের ফোল্ডারে মেসেজ যাবে
+        xhr.open("POST", dbUrl + secureID + "/" + selectedMonth + ".json", true);
         xhr.send(data);
+        
         document.getElementById('msg_text').value = "";
-        setTimeout(loadSecureMsgs, 500);
+        // দ্রুত আপডেট দেখানোর জন্য
+        setTimeout(loadMsgs, 1000);
     }
 
-    function loadSecureMsgs() {
+    function loadMsgs() {
         if(secureID == "") return;
+        var selectedMonth = document.getElementById('select_month').value;
+        
         var xhr = new XMLHttpRequest();
-        xhr.open("GET", dbUrl + secureID + ".json", true);
+        xhr.open("GET", dbUrl + secureID + "/" + selectedMonth + ".json", true);
         xhr.onreadystatechange = function () {
             if (xhr.readyState == 4 && xhr.status == 200) {
                 var response = JSON.parse(xhr.responseText);
                 var html = "";
-                for (var key in response) {
-                    html += "<div class='msg'><b>" + response[key].u + ":</b> " + response[key].m + "</div>";
+                if (response) {
+                    for (var key in response) {
+                        html += "<div class='msg'><span class='u-name'>" + response[key].u + ":</span> " + response[key].m + "</div>";
+                    }
+                } else {
+                    html = "<div style='color:gray;text-align:center;padding-top:20px;'>এই মাসের কোনো চ্যাট হিস্ট্রি পাওয়া যায়নি।</div>";
                 }
                 document.getElementById('messages').innerHTML = html;
+                
+                // স্ক্রল নিচে নামানো
                 var d = document.getElementById("messages");
                 d.scrollTop = d.scrollHeight;
             }
