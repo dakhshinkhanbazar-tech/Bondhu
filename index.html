@@ -2,47 +2,60 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Bondhu - Top View</title>
+    <title>Bondhu - Sticky Top</title>
     <style>
-        body { background-color: #e5ddd5; margin: 0; padding: 0; font-family: Arial, sans-serif; }
-        .header { background: #075e54; color: #fff; padding: 10px; font-weight: bold; }
+        body { background-color: #e5ddd5; margin: 0; padding: 0; font-family: sans-serif; }
+        .header { background: #075e54; color: #fff; padding: 10px; font-weight: bold; text-align: center; }
         
         /* Login */
-        .l-box { background: #fff; margin: 10px; padding: 10px; border: 1px solid #ccc; text-align: center; }
+        .login-box { background: #fff; margin: 10px; padding: 15px; border: 1px solid #ccc; text-align: center; }
         .in { width: 90%; padding: 8px; margin: 5px 0; border: 1px solid #999; }
         .btn { background: #25d366; color: #fff; padding: 10px; width: 95%; font-weight: bold; border: none; }
 
-        /* Input Area at Top */
-        .top-area { background: #f0f0f0; padding: 10px; border-bottom: 2px solid #ccc; position: sticky; top: 0; z-index: 10; }
-        .msg-in { width: 65%; padding: 8px; border: 1px solid #ccc; }
-        .send { width: 25%; padding: 8px; background: #075e54; color: #fff; border: none; font-weight: bold; }
+        /* Sticky Top Area - মেসেজ বক্স উপরে লক করার জন্য */
+        .top-locked { 
+            background: #f0f0f0; 
+            padding: 10px; 
+            border-bottom: 2px solid #ccc; 
+            position: -webkit-sticky; /* For Safari/Browsers */
+            position: sticky; 
+            top: 0; 
+            z-index: 100;
+        }
+        .msg-in { width: 60%; padding: 8px; border: 1px solid #ccc; font-size: 14px; }
+        .send-btn { width: 28%; padding: 8px; background: #075e54; color: #fff; border: none; font-weight: bold; }
 
-        /* Message Styles */
+        /* History tools */
+        .tools { font-size: 11px; margin-top: 5px; background: #fff; padding: 2px; border: 1px solid #ddd; }
+
+        /* Message List */
         #messages { padding: 10px; }
-        .row { width: 100%; margin-bottom: 8px; clear: both; overflow: hidden; display: block; }
-        .bubble { padding: 8px; border-radius: 5px; border: 1px solid #bbb; display: inline-block; max-width: 85%; word-wrap: break-word; font-size: 14px; }
-        .s { background: #dcf8c6; float: right; } /* Sent */
-        .r { background: #ffffff; float: left; }  /* Received */
-        .u { font-size: 10px; color: #075e54; font-weight: bold; display: block; }
+        .msg-row { width: 100%; margin-bottom: 8px; clear: both; overflow: hidden; }
+        .bubble { padding: 8px; border-radius: 5px; border: 1px solid #bbb; display: inline-block; max-width: 80%; word-wrap: break-word; font-size: 14px; }
+        .sent { background: #dcf8c6; float: right; } 
+        .recd { background: #ffffff; float: left; }
+        .u-name { font-size: 10px; color: #075e54; font-weight: bold; display: block; }
     </style>
 </head>
 <body>
 
 <div class="header">Bondhu Messenger</div>
 
-<div id="l_area" class="l-box">
-    <input type="text" id="id1" class="in" placeholder="Your ID-Pin"><br>
+<div id="l_area" class="login-box">
+    <b>Login to Chat</b><br>
+    <input type="text" id="id1" class="in" placeholder="My ID-Pin"><br>
     <input type="text" id="id2" class="in" placeholder="Friend ID-Pin"><br>
     <button class="btn" onclick="start()">LOGIN</button>
 </div>
 
 <div id="chat_box" style="display:none;">
-    <div class="top-area">
-        <input type="text" id="m_text" class="msg-in" placeholder="Type here...">
-        <button class="send" onclick="send()">SEND</button>
-        <div style="font-size:10px; margin-top:5px;">
-            History: <select id="m_sel" onchange="load()"></select>
-            <button onclick="location.reload()" style="float:right; background:red; color:#fff; border:none; padding:2px 4px;">Exit</button>
+    <div class="top-locked">
+        <input type="text" id="m_text" class="msg-in" placeholder="Write message...">
+        <button class="send-btn" onclick="send()">SEND</button>
+        
+        <div class="tools">
+            Month: <select id="m_sel" onchange="load()"></select>
+            <button onclick="location.reload()" style="float:right; background:red; color:white; border:none; padding:1px 4px;">Exit</button>
         </div>
     </div>
 
@@ -51,7 +64,7 @@
 
 <script>
     var _0xdb = "aHR0cHM6Ly9ib25kaHUtNDg5ZWEtZGVmYXVsdC1ydGRiLmZpcmViYXNlaW8uY29tL3NlY3VyZV9jaGF0cy8=";
-    var _uid = ""; var _uname = "";
+    var _uid = ""; var _un = "";
 
     function start() {
         var a = document.getElementById('id1').value.trim();
@@ -59,14 +72,10 @@
         if(a==""||b=="") return;
         var p = [a,b].sort();
         _uid = btoa(p[0]+p[1]).replace(/=/g, "");
-        _uname = a.split('-')[0];
+        _un = a.split('-')[0];
         document.getElementById('l_area').style.display='none';
         document.getElementById('chat_box').style.display='block';
-        initMenu(); load();
-        setInterval(load, 10000);
-    }
-
-    function initMenu() {
+        
         var sel = document.getElementById('m_sel');
         var d = new Date(); var s = new Date(2025,0,1);
         while(s<=d){
@@ -76,18 +85,19 @@
             sel.insertBefore(o, sel.firstChild);
             s.setMonth(s.getMonth()+1);
         }
+        load();
+        setInterval(load, 10000);
     }
 
     function send() {
         var t = document.getElementById('m_text').value;
         var m = document.getElementById('m_sel').value;
         if(t=="") return;
-        var d = JSON.stringify({"u":_uname,"m":t});
         var x = new XMLHttpRequest();
         x.open("POST", atob(_0xdb)+_uid+"/"+m+".json", true);
-        x.send(d);
+        x.send(JSON.stringify({"u":_un,"m":t}));
         document.getElementById('m_text').value="";
-        setTimeout(load, 1500);
+        setTimeout(load, 1200);
     }
 
     function load() {
@@ -99,16 +109,12 @@
             if(x.readyState==4 && x.status==200){
                 var res = JSON.parse(x.responseText);
                 var h = "";
-                var keys = [];
-                for(var k in res) keys.push(k);
-                keys.reverse(); // THIS REVERSES THE ORDER (Newest First)
-
-                for(var i=0; i<keys.length; i++){
-                    var k = keys[i];
-                    var c = (res[k].u == _uname) ? "s" : "r";
-                    h+="<div class='row'><div class='bubble "+c+"'><span class='u'>"+res[k].u+"</span>"+res[k].m+"</div></div>"; 
+                // নতুন মেসেজ সবার উপরে দেখানোর লজিক
+                for(var k in res){ 
+                    var type = (res[k].u == _un) ? "sent" : "recd";
+                    h = "<div class='msg-row'><div class='bubble "+type+"'><span class='u-name'>"+res[k].u+"</span>"+res[k].m+"</div></div>" + h; 
                 }
-                document.getElementById('messages').innerHTML = h || "<center>No messages</center>";
+                document.getElementById('messages').innerHTML = h || "<center style='padding:20px; color:gray;'>No messages</center>";
             }
         };
         x.send();
